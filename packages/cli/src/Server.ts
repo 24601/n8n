@@ -579,6 +579,7 @@ class Server extends AbstractServer {
 					const authCookie = req.cookies?.[AUTH_COOKIE_NAME] ?? '';
 					await resolveJwt(authCookie);
 				} catch (error) {
+					console.error("Error resolvingJWT", error);
 					res.status(401).send('Unauthorized');
 					return;
 				}
@@ -931,9 +932,8 @@ class Server extends AbstractServer {
 				};
 
 				const oauthRequestData = {
-					oauth_callback: `${WebhookHelpers.getWebhookBaseUrl()}${
-						this.restEndpoint
-					}/oauth1-credential/callback?cid=${credentialId}`,
+					oauth_callback: `${WebhookHelpers.getWebhookBaseUrl()}${this.restEndpoint
+						}/oauth1-credential/callback?cid=${credentialId}`,
 				};
 
 				await this.externalHooks.run('oauth1.authenticate', [oAuthOptions, oauthRequestData]);
@@ -1335,7 +1335,7 @@ class Server extends AbstractServer {
 						fileName = metadata.fileName;
 						mimeType = metadata.mimeType;
 						res.setHeader('Content-Length', metadata.fileSize);
-					} catch {}
+					} catch { }
 				}
 				if (mimeType) res.setHeader('Content-Type', mimeType);
 				if (mode === 'download') {
