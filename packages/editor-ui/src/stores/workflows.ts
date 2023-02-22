@@ -9,7 +9,6 @@ import {
 import {
 	IExecutionResponse,
 	IExecutionsCurrentSummaryExtended,
-	IExecutionsSummary,
 	INewWorkflowData,
 	INodeUi,
 	INodeUpdatePropertiesInformation,
@@ -28,6 +27,7 @@ import {
 	IConnection,
 	IConnections,
 	IDataObject,
+	IExecutionsSummary,
 	INode,
 	INodeConnections,
 	INodeCredentials,
@@ -36,7 +36,9 @@ import {
 	INodeIssueData,
 	INodeParameters,
 	IPinData,
+	IRun,
 	IRunData,
+	IRunExecutionData,
 	ITaskData,
 	IWorkflowSettings,
 	NodeHelpers,
@@ -315,7 +317,7 @@ export const useWorkflowsStore = defineStore(STORES.WORKFLOWS, {
 		},
 
 		setWorkflowName(data: { newName: string; setStateDirty: boolean }): void {
-			if (data.setStateDirty === true) {
+			if (data.setStateDirty) {
 				const uiStore = useUIStore();
 				uiStore.stateIsDirty = true;
 			}
@@ -448,6 +450,10 @@ export const useWorkflowsStore = defineStore(STORES.WORKFLOWS, {
 			this.workflowExecutionPairedItemMappings = getPairedItemsMapping(this.workflowExecutionData);
 		},
 
+		setWorkflowExecutionRunData(workflowResultData: IRunExecutionData): void {
+			if (this.workflowExecutionData) this.workflowExecutionData.data = workflowResultData;
+		},
+
 		setWorkflowSettings(workflowSettings: IWorkflowSettings): void {
 			Vue.set(this.workflow, 'settings', workflowSettings);
 		},
@@ -532,17 +538,12 @@ export const useWorkflowsStore = defineStore(STORES.WORKFLOWS, {
 			dataPinningEventBus.$emit('unpin-data', { [payload.node.name]: undefined });
 		},
 
-		addConnection(data: { connection: IConnection[]; setStateDirty: boolean }): void {
+		addConnection(data: { connection: IConnection[] }): void {
 			if (data.connection.length !== 2) {
 				// All connections need two entries
 				// TODO: Check if there is an error or whatever that is supposed to be returned
 				return;
 			}
-			const uiStore = useUIStore();
-			if (data.setStateDirty === true) {
-				uiStore.stateIsDirty = true;
-			}
-
 			const sourceData: IConnection = data.connection[0];
 			const destinationData: IConnection = data.connection[1];
 
@@ -626,7 +627,7 @@ export const useWorkflowsStore = defineStore(STORES.WORKFLOWS, {
 		},
 
 		removeAllConnections(data: { setStateDirty: boolean }): void {
-			if (data && data.setStateDirty === true) {
+			if (data && data.setStateDirty) {
 				const uiStore = useUIStore();
 				uiStore.stateIsDirty = true;
 			}
@@ -771,7 +772,7 @@ export const useWorkflowsStore = defineStore(STORES.WORKFLOWS, {
 		},
 
 		removeAllNodes(data: { setStateDirty: boolean; removePinData: boolean }): void {
-			if (data.setStateDirty === true) {
+			if (data.setStateDirty) {
 				const uiStore = useUIStore();
 				uiStore.stateIsDirty = true;
 			}
@@ -926,6 +927,11 @@ export const useWorkflowsStore = defineStore(STORES.WORKFLOWS, {
 
 			Vue.set(activeExecution, 'finished', finishedActiveExecution.data.finished);
 			Vue.set(activeExecution, 'stoppedAt', finishedActiveExecution.data.stoppedAt);
+			if (finishedActiveExecution.data) {
+				this.setWorkflowExecutionRunData(
+					finishedActiveExecution.data as unknown as IRunExecutionData,
+				);
+			}
 		},
 
 		setActiveExecutions(newActiveExecutions: IExecutionsCurrentSummaryExtended[]): void {

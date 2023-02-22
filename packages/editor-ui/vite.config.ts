@@ -2,7 +2,7 @@ import vue from '@vitejs/plugin-vue2';
 import legacy from '@vitejs/plugin-legacy';
 import monacoEditorPlugin from 'vite-plugin-monaco-editor';
 import path, { resolve } from 'path';
-import { defineConfig, mergeConfig, PluginOption } from 'vite';
+import { defineConfig, mergeConfig } from 'vite';
 import { defineConfig as defineVitestConfig } from 'vitest/config';
 
 import packageJSON from './package.json';
@@ -49,23 +49,26 @@ const lodashAliases = ['orderBy', 'camelCase', 'cloneDeep', 'isEqual', 'startCas
 	replacement: require.resolve(`lodash-es/${name}`),
 }));
 
+const { NODE_ENV } = process.env;
+
 export default mergeConfig(
 	defineConfig({
 		define: {
 			// This causes test to fail but is required for actually running it
-			...(process.env.NODE_ENV !== 'test' ? { global: 'globalThis' } : {}),
+			...(NODE_ENV !== 'test' ? { global: 'globalThis' } : {}),
+			...(NODE_ENV === 'development' ? { process: { env: {} } } : {}),
 			BASE_PATH: `'${publicPath}'`,
 		},
 		plugins: [
+			vue(),
 			legacy({
 				targets: ['defaults', 'not IE 11'],
 			}),
-			vue(),
 			monacoEditorPlugin({
 				publicPath: 'assets/monaco-editor',
 				customDistPath: (root: string, buildOutDir: string, base: string) =>
 					`${root}/${buildOutDir}/assets/monaco-editor`,
-			}) as PluginOption,
+			}),
 		],
 		resolve: {
 			alias: [
