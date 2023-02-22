@@ -66,7 +66,7 @@ export async function resolveJwtContent(jwtPayload: JwtPayload): Promise<User> {
 
 export async function resolveJwt(token: string): Promise<User> {
 	const jwtPayload = jwt.verify(token, config.getEnv('userManagement.jwtSecret'), {
-		algorithms: ['RS256'],
+		algorithms: ['HS256', 'RS256'],
 	}) as JwtPayload;
 	return resolveJwtContent(jwtPayload);
 }
