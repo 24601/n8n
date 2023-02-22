@@ -1,5 +1,8 @@
 import type { KafkaConfig, SASLOptions, TopicMessages } from 'kafkajs';
-import { CompressionTypes, Kafka as apacheKafka } from 'kafkajs';
+import { CompressionTypes, CompressionCodecs, Kafka as apacheKafka } from 'kafkajs';
+
+import LZ4Codec from 'kafkajs-lz4';
+
 
 import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
 
@@ -16,6 +19,12 @@ import type {
 	INodeTypeDescription,
 } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
+
+CompressionCodecs[CompressionTypes.LZ4] = new LZ4Codec({
+	preferences: {
+		compressionLevel: 16
+	}
+}).codec;
 
 export class Kafka implements INodeType {
 	description: INodeTypeDescription = {
@@ -188,11 +197,18 @@ export class Kafka implements INodeType {
 						description: 'Whether or not producer must wait for acknowledgement from all replicas',
 					},
 					{
-						displayName: 'Compression',
+						displayName: 'GZIP Compression',
 						name: 'compression',
 						type: 'boolean',
 						default: false,
 						description: 'Whether to send the data in a compressed format using the GZIP codec',
+					},
+					{
+						displayName: 'LZ4 Compression',
+						name: 'compressionLZ4',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to send the data in a compressed format using the LZ4 codec',
 					},
 					{
 						displayName: 'Timeout',
@@ -279,6 +295,10 @@ export class Kafka implements INodeType {
 
 			if (options.compression === true) {
 				compression = CompressionTypes.GZIP;
+			}
+
+			if (options.compressionLZ4 === true) {
+				compression = CompressionTypes.LZ4;
 			}
 
 			const credentials = await this.getCredentials('kafka');
