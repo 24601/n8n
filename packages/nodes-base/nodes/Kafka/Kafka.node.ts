@@ -21,8 +21,9 @@ import type {
 import { NodeOperationError } from 'n8n-workflow';
 
 CompressionCodecs[CompressionTypes.LZ4] = new LZ4Codec({
-	preferences: {
-		compressionLevel: 16
+	preferences:
+	{
+		compressionLevel: 16,
 	}
 }).codec;
 

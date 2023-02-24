@@ -8,7 +8,7 @@ COPY scripts ./scripts
 COPY packages ./packages
 COPY patches ./patches
 
-RUN apk add --update libc6-compat jq
+RUN apk add --update libc6-compat jq python3 make g++
 RUN corepack enable && corepack prepare --activate
 RUN chown -R node:node .
 USER node

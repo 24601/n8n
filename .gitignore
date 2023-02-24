@@ -21,3 +21,4 @@ cypress/screenshots/*
 *.swp
 .history/**
 .history
+dockerBuildPush.sh
