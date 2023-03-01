@@ -206,8 +206,7 @@ export function validateUpdateFields(
 
 		throw new NodeOperationError(
 			this.getNode(),
-			`Please enter at least one field to update for the ${
-				twoWordResources[resource] ?? resource
+			`Please enter at least one field to update for the ${twoWordResources[resource] ?? resource
 			}.`,
 		);
 	}
@@ -215,7 +214,8 @@ export function validateUpdateFields(
 
 export const toArray = (str: string) => str.split(',').map((e) => e.trim());
 
-export function adjustAddress(fixedCollection: IDataObject & AddressFixedCollection) {
+//@ts-ignore
+export function adjustAddress(fixedCollection: IDataObject & AddressFixedCollection): (IDataObject & AddressFixedCollection) {
 	if (!fixedCollection.address) return fixedCollection;
 
 	const adjusted = omit(fixedCollection, ['address']);
