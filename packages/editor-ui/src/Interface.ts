@@ -766,9 +766,15 @@ export interface IN8nUISettings {
 			enabled: boolean;
 		};
 	};
-	ldap: {
-		loginLabel: string;
-		loginEnabled: boolean;
+	sso: {
+		saml: {
+			loginLabel: string;
+			loginEnabled: boolean;
+		};
+		ldap: {
+			loginLabel: string;
+			loginEnabled: boolean;
+		};
 	};
 	onboardingCallPromptEnabled: boolean;
 	allowedModules: {
@@ -1119,6 +1125,7 @@ export interface NDVState {
 		canDrop: boolean;
 		stickyPosition: null | XYPosition;
 	};
+	isMappingOnboarded: boolean;
 }
 
 export interface UIState {
@@ -1193,6 +1200,10 @@ export interface ISettingsState {
 		};
 	};
 	ldap: {
+		loginLabel: string;
+		loginEnabled: boolean;
+	};
+	saml: {
 		loginLabel: string;
 		loginEnabled: boolean;
 	};
