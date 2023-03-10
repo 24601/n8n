@@ -6,9 +6,8 @@ import LZ4Codec from 'kafkajs-lz4';
 
 import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
 
-import type { IExecuteFunctions } from 'n8n-core';
-
 import type {
+	IExecuteFunctions,
 	ICredentialDataDecryptedObject,
 	ICredentialsDecrypted,
 	ICredentialTestFunctions,
